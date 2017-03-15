@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.vimond.techtest.interval.Point.PointTypeEnum;
+import com.vimond.techtest.interval.AnnotatedPoint.PointTypeEnum;
 
 /**
  * Class to test the Interval program with several inputs
@@ -14,68 +14,79 @@ import com.vimond.techtest.interval.Point.PointTypeEnum;
  */
 public class Test {
 
+	/**
+	 * main method to provide inputs to the include and exclude intervals and call the sweep algorithm
+	 * to remove the exclude intervals
+	 * @param args
+	 */
 	public static void main(String[] args) {
 
-		// Example 1
-//				List<Interval> include = Arrays.asList(new Interval(10, 100));
-//				List<Interval> exclude = Arrays.asList(new Interval(20, 30));
+		// Provide interval inputs for include and exclude here
+		List<Interval> include = Arrays.asList(new Interval(10, 100), new Interval(200, 300), new Interval(400, 500));
+		List<Interval> exclude = Arrays.asList(new Interval(95, 205), new Interval(410, 420));
 
-		// Example 2
-		//FIXME: merge intervals
-		List<Interval> include = Arrays.asList(new Interval(50, 5000), new Interval(10, 100));
-		List<Interval> exclude = Arrays.asList();
+		// initialise list with include and exclude intervals
+		List<AnnotatedPoint> queue = initQueue(include, exclude);
 
-		//	Example 3
-//				List<Interval> include = Arrays.asList(new Interval(10, 100), new Interval(200, 300));
-//				List<Interval> exclude = Arrays.asList(new Interval(95, 205));
-
-		//		//Example 4
-//				List<Interval> include = Arrays.asList(new Interval(10, 100), new Interval(200, 300), new Interval(400, 500));
-//				List<Interval> exclude = Arrays.asList(new Interval(95, 205), new Interval(410, 420));
-
-		List<Point> queue = initQueue(include, exclude);
+		// run sweep and store the result in the list
 		List<Interval> result = doSweep(queue);
 
-		// print result
+		// print the result
 		for (Interval i : result) {
 			System.out.println(i);
-		}
-	}
+		} // end for
+	} // end main()
 
-	private static List<Point> initQueue(List<Interval> include, List<Interval> exclude) {
-		// annotate all points and put them in a list
-		List<Point> queue = new ArrayList<>();
+	/**
+	 * initialise queue with include and exclude intervals provided in the input
+	 * @param include
+	 * @param exclude
+	 * @return
+	 */
+	private static List<AnnotatedPoint> initQueue(List<Interval> include, List<Interval> exclude) {
+
+		// annotate all points and add them to a list
+		List<AnnotatedPoint> queue = new ArrayList<>();
+		// add include intervals to the list
 		for (Interval i : include) {
-			queue.add(new Point(i.start, PointTypeEnum.Start));
-			queue.add(new Point(i.end, PointTypeEnum.End));
-		}
+			queue.add(new AnnotatedPoint(i.start, PointTypeEnum.Start));
+			queue.add(new AnnotatedPoint(i.end, PointTypeEnum.End));
+		} // end for
+		// add exclude intervals to the list
 		for (Interval i : exclude) {
-			queue.add(new Point(i.start, PointTypeEnum.GapStart));
-			queue.add(new Point(i.end, PointTypeEnum.GapEnd));
-		}
+			queue.add(new AnnotatedPoint(i.start, PointTypeEnum.GapStart));
+			queue.add(new AnnotatedPoint(i.end, PointTypeEnum.GapEnd));
+		} // end for
 
 		if(exclude.isEmpty()) {
-			for (Interval i : include) {
-				queue.add(new Point(i.start, PointTypeEnum.Start));
-				queue.add(new Point(i.end, PointTypeEnum.End));
-			}
+
 			return queue;
-		}
+		} // end if
 
 		// sort the queue
 		Collections.sort(queue);
 
 		return queue;
-	}
+	} // end initQueue()
 
-	private static List<Interval> doSweep(List<Point> queue) {
+	/**
+	 * sweep through the queue to find out gaps between intervals based on inputs
+	 * passed in the include and exclude intervals
+	 * @param queue
+	 * @return
+	 */
+	private static List<Interval> doSweep(List<AnnotatedPoint> queue) {
 		List<Interval> result = new ArrayList<>();
 
-		// iterate over the queue
-		boolean isInterval = false; // isInterval: #Start seen > #End seen
-		boolean isGap = false;      // isGap:      #GapStart seen > #GapEnd seen
+		// isInterval: #Start seen > #End seen
+		boolean isInterval = false;
+
+		// isGap: #GapStart seen > #GapEnd seen
+		boolean isGap = false;
 		int intervalStart = 0;
-		for (Point point : queue) {
+
+		// iterate through the queue to find out gaps in the intervals
+		for (AnnotatedPoint point : queue) {
 			switch (point.type) {
 			case Start:
 				if (!isGap) {
@@ -101,9 +112,9 @@ public class Test {
 				}
 				isGap = false;
 				break;
-			}
-		}
+			} // end switch
+		} // end for
 
 		return result;
-	}
-}
+	} // end doSweep()
+} // end Test class
