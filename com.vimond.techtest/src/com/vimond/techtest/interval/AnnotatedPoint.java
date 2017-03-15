@@ -9,7 +9,7 @@ package com.vimond.techtest.interval;
  */
 public class AnnotatedPoint implements Comparable<AnnotatedPoint> {
 	
-	// value within the intervals
+    // value within the intervals
     public int value;
     
     // type of the point(End, GapEnd, GapStart, Start)
