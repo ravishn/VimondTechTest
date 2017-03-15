@@ -24,4 +24,4 @@ public class Interval {
     public String toString() {
         return "(" + start + "," + end + ")";
     } // end toString()
-}
+} // end of Interval class
